@@ -8,8 +8,9 @@ The script here will run automated backups--you'll need to make some simple modi
 2. Modify script with your own backup destinations, log file paths, duplicacy executable, etc.
 3. Open an account with a cloud backup provider (this document assumes backblaze b2)
 4. Initialize the backup locations per this document
-5. Create a windows scheduled task to run at some interval with elevated privileges
-6. If you're backing up a user profile on Windows, see the "filter" section below.  
+5. Run a backup manually per this document, if using encryption (the first time you run a backup for a location you're asked to type your encryption key--after that it's saved in the duplicacy config folder)
+6. Create a windows scheduled task to run at some interval with elevated privileges
+7. If you're backing up a user profile on Windows, see the "filter" section below.  
 
 These are "plug and chug" instructions for making encrypted backups to a local folder, and then copying those to a cloud storage provider.  
 
@@ -44,10 +45,10 @@ duplicacy add -copy default b2 local_C b2://duplicacybucket1234
 
 This will:
 
--make the new storage location compatible with the existing one (-copy default)
--give the new storage location the friendly name 'b2' (used when operating on it with certain commands)
--give these backups the name local_C (to distinguish them from other backups in the same location)
--specify the remote backup destination as a Backblaze B2 bucket with the name 'duplicacybucket1234'
+* make the new storage location compatible with the existing one (-copy default)
+* give the new storage location the friendly name 'b2' (used when operating on it with certain commands)
+* give these backups the name local_C (to distinguish them from other backups in the same location)
+* specify the remote backup destination as a Backblaze B2 bucket with the name 'duplicacybucket1234'
 
 to run remote backup
 
@@ -151,6 +152,8 @@ Windows profiles contain a lot of stuff that doesn't really need to be backed up
 
 Put the "filters" file in the duplicacy config folder in the root of your profile (c:\users\myuser\.duplicacy).  This has a number of exclusions for temporary and generally useless files.  Note:  A number of the exclusions are drawn from the list of exclusions that Code42 published for the now defunct Crashplan Home service (https://support.code42.com/CrashPlan/4/Troubleshooting/What_is_not_backing_up).  
 
+Make sure the filters are appropriate for your purposes--they may be too aggressive for some people.  
+
 ## Miscellaneous
 
 To verify a specific snapshot:
@@ -161,8 +164,7 @@ This will:
 
 * verify all backup files references by snapshot 88 existing
 * display what's happening
-* verify the integrity of each backup file
-(technically, it's verifying chunks--the duplicacy storage files, not the actual files that are backed up)
+* verify the integrity of each backup file (technically, it's verifying chunks--the duplicacy storage files, not the actual files that are backed up)
 
 You could do 
 
@@ -170,3 +172,8 @@ You could do
 
 To run the check on your remote storage.  The verification might end up costing transactions.  I haven't tried it.  
 
+## Using the Backup Script
+
+* The log file location needs to be created manually
+* Run a backup manually per this document, if using encryption.  The first time you run a backup for a location you're asked to type your encryption key (the script doesn't do this)--after that it's saved in the duplicacy config folder.  
+* The script assumes you are backing up to a local drive and then to a remote location.  It may need some light editing if you only do local or remote backups.  
