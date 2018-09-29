@@ -49,6 +49,7 @@ This will:
 * give the new storage location the friendly name 'b2' (used when operating on it with certain commands)
 * give these backups the name local_C (to distinguish them from other backups in the same location)
 * specify the remote backup destination as a Backblaze B2 bucket with the name 'duplicacybucket1234'
+* my testing indicates not specifying -e here means your cloud backups are not encrypted.  Not sure how/why that works just yet.  
 
 to run remote backup
 
@@ -127,8 +128,10 @@ duplicacy init local_C N:\_duplicacy_backup -e
 OR you could init your remote storage:
 
 ```
-duplicacy init local_C b2://duplicacybucket1234 -e 
+duplicacy init local_C b2://duplicacybucket1234
 ```
+
+(if you didn't initialize your remote with -e, don't include it here)
 
 Then:
 
