@@ -47,13 +47,13 @@ This will:
 
 * make the new storage location compatible with the existing one (-copy default)
 * give the new storage location the friendly name 'b2' (used when operating on it with certain commands)
-* give these backups the name local_C (to distinguish them from other backups in the same location)
+* give these backups the name local_C (to distinguish them from other backups in the same remote location)
 * specify the remote backup destination as a Backblaze B2 bucket with the name 'duplicacybucket1234'
-* my testing indicates not specifying -e here means your cloud backups are not encrypted.  Not sure how/why that works just yet.  
+* my testing indicates not specifying -e here means your cloud backups are not encrypted, even if your local backups are encrypted.  Not sure how/why that works just yet.  
 
 to run remote backup
 
-dup copy -to b2 -threads 10
+duplicacy copy -to b2 -threads 10
 
 (copies local storage to b2)
 
@@ -104,6 +104,8 @@ duplicacy prune
 duplicacy prune -storage b2
 ```
 
+(UPDATE:  This appears to actually keep one backup a day for the last 30 days)
+
 The pruning process collects things to be deleted on the first run, and then actually deletes them when its run again.  Although it seems like the second run is frequently hesitant to delete things--I guess that's better than the alternative.  
 
 To prune a specific snapshot:
@@ -131,7 +133,8 @@ OR you could init your remote storage:
 duplicacy init local_C b2://duplicacybucket1234
 ```
 
-(if you didn't initialize your remote with -e, don't include it here)
+(supply your encryption password and API credentials.  If your remote was initialized with -e, you must include it here again)
+
 
 Then:
 
@@ -165,15 +168,15 @@ To verify a specific snapshot:
 
 This will:
 
-* verify all backup files references by snapshot 88 existing
+* verify all existing backup files referenced by snapshot 88
 * display what's happening
-* verify the integrity of each backup file (technically, it's verifying chunks--the duplicacy storage files, not the actual files that are backed up)
+* verify the integrity of each backup file (chunk) by downloading it and recomputing file hashes.  
 
-You could do 
+You could also do: 
 
 ```duplicacy check -r 88 -files -stats -storage b2```
 
-To run the check on your remote storage.  The verification might end up costing transactions.  I haven't tried it.  
+To run the check on your remote storage.  Since this downloads each chunk, you will generally incur some sort of added cost from your remote storage provider.  As a point of reference, when I did this for one of my backups on Backblaxe B2, it downloaded 60GB and produced about 31,000 class B transactions.  The cost for this as of 2019-04-10 was approximately. 0.60 US dollars.  
 
 ## Using the Backup Script
 
