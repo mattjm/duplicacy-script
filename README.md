@@ -1,6 +1,6 @@
 # Duplicacy Backups 
 
-This is a document about setting up and running duplicacy for automated backups to local and cloud destinations on Windows.  
+This is a document about setting up and running duplicacy for automated backups from a to local and cloud destinations on Windows.  
 
 The script here will run automated backups--you'll need to make some simple modifications to it.  The tasks you need to do are:
 
@@ -28,13 +28,13 @@ duplicacy init local_C N:\_duplicacy_backup -e
 This will:
 
 * make c:\users\myuser the folder that is backed up
-* give these backups the name local_C (to distinguish them from other backups in the same location)
+* give these backups the name local_C (to distinguish them from other backups to the same destination)
 * set the backup destination to \N:\_duplicacy_backup
 * encrypt the backups with the password you specify
 
 ### Remote Backup
 
-
+(this step assumes you've already set up a local backup per the above instructions)
 
 ```
 cd c:\users\myuser
@@ -49,9 +49,9 @@ This will:
 * give the new storage location the friendly name 'b2' (used when operating on it with certain commands)
 * give these backups the name local_C (to distinguish them from other backups in the same remote location)
 * specify the remote backup destination as a Backblaze B2 bucket with the name 'duplicacybucket1234'
-* my testing indicates not specifying -e here means your cloud backups are not encrypted, even if your local backups are encrypted.  Not sure how/why that works just yet.  
+* my testing indicates that not specifying -e here means your cloud backups are not encrypted, even if your local backups are encrypted.  Not sure how/why that works just yet.  
 
-to run remote backup
+to run remote backup (after running at least one local backup, as described in the next section):
 
 duplicacy copy -to b2 -threads 10
 
@@ -72,7 +72,7 @@ duplicacy backup -stats -vss
 This will:
 
 * Run backups for c:\users\myuser
-* Use the Windows Volume Shadow Copy Service (VSS) to back up open files.  Note you need be running an administrator command prompt to use the vss option.  
+* Use the Windows Volume Shadow Copy Service (VSS) to back up open files.  Note you need to be running an administrator/elevated command prompt to use the vss option.  
 * Display stats on what is happening
 
 To run the remote backup:
@@ -115,6 +115,7 @@ To prune a specific snapshot:
 This will:
 
 * prune snapshot 45
+* "-exclusive" assumes your client is the only one accessing the backup destination--usually true for home users.  Leave this option off if you're doing something fancy.  
 
 ## Restoring
 
@@ -176,7 +177,7 @@ You could also do:
 
 ```duplicacy check -r 88 -files -stats -storage b2```
 
-To run the check on your remote storage.  Since this downloads each chunk, you will generally incur some sort of added cost from your remote storage provider.  As a point of reference, when I did this for one of my backups on Backblaxe B2, it downloaded 60GB and produced about 31,000 class B transactions.  The cost for this as of 2019-04-10 was approximately. 0.60 US dollars.  
+To run the check on your remote storage.  Since this downloads each chunk, you will generally incur some sort of added cost from your remote storage provider.  As a point of reference, when I did this for one of my backups on Backblaxe B2, it downloaded 60GB and produced about 31,000 class B transactions.  The cost for this as of 2019-04-10 was approximately. 0.60 US dollars.  You need to have enough free space to download the entire backup.  
 
 ## Using the Backup Script
 
